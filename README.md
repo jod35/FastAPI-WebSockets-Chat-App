@@ -1,10 +1,11 @@
 # FastAPI Websockets with Javascript 
 This is a simple web socket chat application I built in this [livestream](https://www.youtube.com/live/5o__C9wJHZA?si=L5xwYWZiYGXot-es)
 
-<video width="640" height="360" controls>
-  <source src="./assets/demo.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+
+https://github.com/user-attachments/assets/d089bd95-4ca0-43ea-bdee-3a1ac8704bc8
+
+
+
 
 
 ## How to run the app
