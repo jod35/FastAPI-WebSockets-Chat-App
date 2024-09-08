@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastAPI Websocket Demo</title>
+</head>
+
+<body>
+    <h1>FastAPI Websocket Demo</h1>
+    <p>Client: <b><span id="client-id"></span></b></p>
+    <form>
+        <label for="message">Message</label>
+        <p>
+            <input type="text" name="message" id="message" required>
+            <button type="submit">Send</button>
+        </p>
+    </form>
+
+    <div id="messages"></div>
+
+    <script>
+        const ws = new WebSocket("ws://localhost:8000/ws")
+        const form = document.querySelector('form')
+        const messagesDiv = document.getElementById('messages')
+        const clientIdSpan = document.getElementById('client-id')
+
+
+        // create a unique idsentifier for each client
+        const makeid = (length) => {
+            let result = '';
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            const charactersLength = characters.length;
+            let counter = 0;
+            while (counter < length) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                counter += 1;
+            }
+            return result;
+        }
+
+
+        const clientIdentifier = makeid(6);
+
+        clientIdSpan.innerText = clientIdentifier
+
+        ws.onopen = () => {
+            // client is already
+            console.log('Connected to WebSocket Server')
+            ws.send(JSON.stringify({
+                content: `${clientIdentifier} joined`,
+                client: clientIdentifier,
+                timestamp: new Date().getTime()
+            }))
+        }
+
+        ws.onmessage = (event) => {
+            // sending a message
+            const data = JSON.parse(event.data)
+
+            const newMessage = document.createElement('p')
+
+            newMessage.innerText = `${data.client} says ${data.message}`
+
+            messagesDiv.appendChild(newMessage)
+
+            const hr = document.createElement('hr')
+
+            messagesDiv.appendChild(hr)
+        }
+
+        ws.onerror = (error) => {
+            console.error('WebSocket Error:', error)
+        }
+
+        ws.onclose = () => {
+            console.log('WebSocket connection closed')
+        }
+
+
+        form.addEventListener('submit', async (event) => {
+            //submittine event
+            const formData = new FormData(form);
+
+            const message = formData.get('message');
+
+            ws.send(JSON.stringify({
+                content: message,
+                client: clientIdentifier,
+                timestamp: new Date().getTime()
+            }))
+
+            form.reset();
+            event.preventDefault()
+        })
+    </script>
+</body>
+
+</html>
